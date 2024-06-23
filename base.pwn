@@ -67,7 +67,6 @@ static stock const
     {ZONE_KINGS, -2329.310058, 458.411010, -1993.280029, 578.395996},
     {ZONE_KINGS, -2253.540039, 373.539001, -1993.280029, 458.411010},
     {ZONE_GARCIA, -2411.219970, -222.589004, -2173.040039, 265.243011},
-    {ZONE_GARCIA, -2395.139892, -222.589004, -2354.090087, -204.792007},
     {ZONE_DOHERTY, -2173.040039, -222.589004, -1794.920043, 265.243011},
     {ZONE_DOWNTOWN, -1993.280029, 265.243011, -1794.920043, 578.395996},
     {ZONE_EASTER_BASIN, -1794.920043, -50.096298, -1499.890014, 249.904006},
@@ -234,6 +233,11 @@ RemoveZoneFromTeam(Team:teamid, zoneid) {
 }
 
 GetTeamZoneInPoint(Float:x, Float:y, Float:z) {
+    /**
+     * This function will be used to get the zone by coordinates, like `GetPlayerPos` with `GetTeamZoneInPoint`.
+     * This will return the zone the player is in to begin dominating.
+     */
+
     new
         STREAMER_TAG_AREA:arr[256],
         data[2]
