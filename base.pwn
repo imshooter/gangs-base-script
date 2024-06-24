@@ -18,7 +18,9 @@ enum Team {
     TEAM_SAN_FIERRO_RIFA,
     TEAM_GROVE_STREET_FAMILIES,
     TEAM_SAN_FIERRO_TRIADS,
-    TEAM_DA_NANG_BOYS
+    TEAM_DA_NANG_BOYS,
+    TEAM_THE_ITALIAN_MAFIA,
+    TEAM_THE_RUSSIAN_MAFIA
 };
 
 static enum E_TEAM_DATA {
@@ -30,13 +32,15 @@ static stock const
     gTeamData[][E_TEAM_DATA] =
 {
     {!"", 0xFFFFFFFF},
-    {!"Varrios Los Aztecas", 0x00FFFFFF},
-    {!"Ballas", 0xFF00FFFF},
-    {!"Los Santos Vagos", 0xFFFF00FF},
-    {!"San Fierro Rifa", 0x0068A8FF},
-    {!"Grove Street Families", 0x00FF00FF},
-    {!"San Fierro Triads", 0x101010FF},
-    {!"Da Nang Boys", 0x964B00FF}
+    {!"Varrios Los Aztecas", 0x00C8FFFF}, // (Turquoise)
+    {!"Ballas", 0xC800C8FF}, // (Purple)
+    {!"Los Santos Vagos", 0xFFC800FF}, // (Yellow)
+    {!"San Fierro Rifa", 0x0000C8FF}, // (Dark Blue)
+    {!"Grove Street Families", 0x46C800FF}, // (Green)
+    {!"San Fierro Triads", 0xFFB6C1FF}, // (Light Pink)
+    {!"Da Nang Boys", 0xFFDCBEFF}, // (Orange)
+    {!"The Italian Mafia", 0xC8C8C8FF}, // (Gray)
+    {!"The Russian Mafia", 0x0E1111FF} // (Black)
 };
 
 static enum E_ZONE_AREA_DATA {
@@ -74,6 +78,7 @@ static stock const
     {ZONE_QUEENS, -2593.439941, 54.722000, -2411.219970, 458.411010},
     {ZONE_QUEENS, -2533.040039, 458.411010, -2329.310058, 578.395996},
     {ZONE_QUEENS, -2411.219970, 373.539001, -2253.540039, 458.411010},
+	{ZONE_THE_STRIP, 2027.400024, 863.229003, 2087.389892, 1703.229980},
 
     // LS
 
@@ -270,7 +275,7 @@ InitZones() {
     }
 }
 
-GetColor(color, alpha = 0x75) {
+GetColor(color, alpha = 0x80) {
     return (alpha | (~0xFF & color));
 }
 
@@ -302,7 +307,7 @@ public OnGameModeInit() {
     // Test
 
     for (new i; i != MAX_TEAM_ZONES; ++i) {
-        AddZoneToTeam(Team:(random(_:MAX_TEAMS)), gZoneID[i]);
+        AddZoneToTeam(Team:(RandomMinMax(1, _:MAX_TEAMS)), gZoneID[i]);
     }
 
     return 1;
