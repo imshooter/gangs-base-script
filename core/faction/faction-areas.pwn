@@ -1,4 +1,11 @@
 /**
+ * # Events
+ */
+
+forward OnPlayerEnterDominatableZone(playerid, zoneid);
+forward OnPlayerLeaveDominatableZone(playerid, zoneid);
+
+/**
  * # Header
  */
 
@@ -150,15 +157,17 @@ const
 ;
 
 static
-    gDominatableZoneID[MAX_DOMIN_ZONE_AREAS]                   = { INVALID_GANG_ZONE, ... },
-    STREAMER_TAG_AREA:gDominatableZoneAreaID[MAX_GANG_ZONES]   = { STREAMER_TAG_AREA:INVALID_STREAMER_ID, ... },
-    Faction:gZoneFactionID[MAX_GANG_ZONES char]                = { FACTION_NONE, ... },
-    gZoneFactionSlotID[MAX_GANG_ZONES char]                    = { -1, ... },
-    gFactionDominatedZones[MAX_FACTIONS][MAX_DOMIN_ZONE_AREAS] = { { INVALID_GANG_ZONE, ... }, ... }
+	gZoneDominatableZoneAreaID[MAX_GANG_ZONES char]                   = { -1, ... },
+    gDominatableZoneID[MAX_DOMIN_ZONE_AREAS]                          = { INVALID_GANG_ZONE, ... },
+    STREAMER_TAG_AREA:gDominatableZoneDynAreaID[MAX_DOMIN_ZONE_AREAS] = { STREAMER_TAG_AREA:INVALID_STREAMER_ID, ... },
+    Faction:gDominatableZoneFactionID[MAX_DOMIN_ZONE_AREAS char]      = { FACTION_NONE, ... },
+    gDominatableZoneFactionSlotID[MAX_DOMIN_ZONE_AREAS char]          = { -1, ... },
+    gFactionDominatedZones[MAX_FACTIONS][MAX_DOMIN_ZONE_AREAS]        = { { INVALID_GANG_ZONE, ... }, ... }
 ;
 
 new
-    Iterator:DominatedZone[MAX_FACTIONS]<MAX_DOMIN_ZONE_AREAS>
+    Iterator:DominatedZone[MAX_FACTIONS]<MAX_DOMIN_ZONE_AREAS>,
+	Iterator:DominatableZonePlayer[MAX_DOMIN_ZONE_AREAS]<MAX_PLAYERS>
 ;
 
 /**
@@ -190,12 +199,47 @@ stock GetDominatableZoneAtPoint(Float:x, Float:y, Float:z) {
     for (new i, size = GetDynamicAreasForPoint(x, y, z, arr); i < size; ++i) {
         Streamer_GetArrayData(STREAMER_TYPE_AREA, arr[i], E_STREAMER_EXTRA_ID, data);
 
-        if (data[0] != ZONE_STREAMER_IDENTIFIER) {
+        if (data[0] != DOMIN_ZONE_STREAMER_IDENTIFIER) {
             continue;
         }
 
-        return gDominatableZoneID[data[2]];
+        return gDominatableZoneID[data[1]];
     }
+
+	return INVALID_GANG_ZONE;
+}
+
+/**
+ * # Zone
+ */
+
+stock GetZoneFaction(zoneid, &Faction:factionid, &index = -1) {
+	if (gZoneDominatableZoneAreaID{zoneid} == -1) {
+		return;
+	}
+
+	new const
+		index = gZoneDominatableZoneAreaID{zoneid}
+	;
+
+	factionid = gDominatableZoneFactionID{index};
+	index = gDominatableZoneFactionSlotID{index};
+}
+
+stock GetZonePlayerCount(zoneid) {
+	if (!IsValidGangZone(zoneid)) {
+		return 0;
+	}
+
+	if (gZoneDominatableZoneAreaID{zoneid} == -1) {
+		return 0;
+	}
+
+	new const
+		index = gZoneDominatableZoneAreaID{zoneid}
+	;
+
+	return Iter_Count(DominatableZonePlayer[index]);
 }
 
 /**
@@ -203,33 +247,49 @@ stock GetDominatableZoneAtPoint(Float:x, Float:y, Float:z) {
  */
 
 stock AddZoneToFaction(Faction:factionid, zoneid) {
+	if (gZoneDominatableZoneAreaID{zoneid} == -1) {
+		return;
+	}
+
     new const
-        index = Iter_Alloc(DominatedZone[factionid])
+        alloc = Iter_Alloc(DominatedZone[factionid])
     ;
 
-    if (index == cellmin) {
+    if (alloc == cellmin) {
         return;
     }
 
-    gZoneFactionID{zoneid} = factionid;
-    gZoneFactionSlotID{zoneid} = index;
-    gFactionDominatedZones[factionid][index] = zoneid;
+	new const
+		index = gZoneDominatableZoneAreaID{zoneid}
+	;
+
+    gDominatableZoneFactionID{index} = factionid;
+    gDominatableZoneFactionSlotID{index} = index;
+    gFactionDominatedZones[factionid][alloc] = zoneid;
 }
 
 stock RemoveZoneFromFaction(Faction:factionid, zoneid) {
-    if (gZoneFactionSlotID{zoneid} == -1) {
+	if (gZoneDominatableZoneAreaID{zoneid} == -1) {
+		return;
+	}
+
+	new const
+		index = gZoneDominatableZoneAreaID{zoneid}
+	;
+
+    if (gDominatableZoneFactionSlotID{index} == -1) {
         return;
     }
 
     new const
-        index = gZoneFactionSlotID{zoneid}
+        alloc = gDominatableZoneFactionSlotID{index}
     ;
 
-    gZoneFactionID{zoneid} = FACTION_NONE;
-    gZoneFactionSlotID{zoneid} = -1;
-    gFactionDominatedZones[factionid][index] = INVALID_GANG_ZONE;
+    gDominatableZoneFactionID{index} = FACTION_NONE;
+    gDominatableZoneFactionSlotID{index} = -1;
+    gFactionDominatedZones[factionid][alloc] = INVALID_GANG_ZONE;
     
-    Iter_Remove(DominatedZone[factionid], index);
+    Iter_Remove(DominatedZone[factionid], alloc);
 }
 
 stock GetFactionDominatedZones(Faction:factionid, dest[MAX_DOMIN_ZONE_AREAS] = { INVALID_GANG_ZONE, ... }, &count = 0) {
@@ -240,7 +300,7 @@ stock GetFactionDominatedZones(Faction:factionid, dest[MAX_DOMIN_ZONE_AREAS] = {
     }
 }
 
-stock GetPlayerFactionZoneID(playerid) {
+stock GetPlayerDominatableZoneID(playerid) {
     new
         Float:x,
         Float:y,
@@ -265,12 +325,14 @@ hook OnGameModeInit() {
 
     for (new i; i != MAX_DOMIN_ZONE_AREAS; ++i) {
         gDominatableZoneID[i] = GangZoneCreate(gZoneAreaData[i][E_ZONE_AREA_MIN_X], gZoneAreaData[i][E_ZONE_AREA_MIN_Y], gZoneAreaData[i][E_ZONE_AREA_MAX_X], gZoneAreaData[i][E_ZONE_AREA_MAX_Y]);
-        gDominatableZoneAreaID[gDominatableZoneID[i]] = CreateDynamicRectangle(gZoneAreaData[i][E_ZONE_AREA_MIN_X], gZoneAreaData[i][E_ZONE_AREA_MIN_Y], gZoneAreaData[i][E_ZONE_AREA_MAX_X], gZoneAreaData[i][E_ZONE_AREA_MAX_Y]);
+        gDominatableZoneDynAreaID[i] = CreateDynamicRectangle(gZoneAreaData[i][E_ZONE_AREA_MIN_X], gZoneAreaData[i][E_ZONE_AREA_MIN_Y], gZoneAreaData[i][E_ZONE_AREA_MAX_X], gZoneAreaData[i][E_ZONE_AREA_MAX_Y]);
+		
+		gZoneDominatableZoneAreaID{gDominatableZoneID[i]} = i;
 
         data[0] = DOMIN_ZONE_STREAMER_IDENTIFIER;
         data[1] = i;
 
-        Streamer_SetArrayData(STREAMER_TYPE_AREA, gDominatableZoneAreaID[gDominatableZoneID[i]], E_STREAMER_EXTRA_ID, data);
+        Streamer_SetArrayData(STREAMER_TYPE_AREA, gDominatableZoneDynAreaID[i], E_STREAMER_EXTRA_ID, data);
     }
     
     return 1;
@@ -278,8 +340,7 @@ hook OnGameModeInit() {
 
 hook OnPlayerSpawn(playerid) {
     new
-        zoneid,
-        Faction:factionid
+        zoneid, index, Faction:factionid
     ;
 
     for (new i; i != MAX_DOMIN_ZONE_AREAS; ++i) {
@@ -287,11 +348,52 @@ hook OnPlayerSpawn(playerid) {
             break;
         }
 
-        zoneid = gDominatableZoneID[i];
-        factionid = gZoneFactionID{zoneid};
+		zoneid    = gDominatableZoneID[i];
+		index     = gZoneDominatableZoneAreaID{zoneid},
+        factionid = gDominatableZoneFactionID{index};
 
         GangZoneShowForPlayer(playerid, zoneid, GetFactionColor(factionid, 0x80));
     }
-    
+
     return 1;
+}
+
+hook OnPlayerEnterDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
+	new
+		data[2]
+	;
+
+	Streamer_GetArrayData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, data);
+
+	if (data[0] == DOMIN_ZONE_STREAMER_IDENTIFIER) {
+		new const
+			index = data[1]
+		;
+
+		Iter_Add(DominatableZonePlayer[index], playerid);
+
+		CallLocalFunction("OnPlayerEnterDominatableZone", "ii", playerid, gDominatableZoneID[index]);
+	}
+	
+	return 1;
+}
+
+hook OnPlayerLeaveDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
+	new
+		data[2]
+	;
+
+	Streamer_GetArrayData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, data);
+
+	if (data[0] == DOMIN_ZONE_STREAMER_IDENTIFIER) {
+		new const
+			index = data[1]
+		;
+
+		Iter_Add(DominatableZonePlayer[index], playerid);
+
+		CallLocalFunction("OnPlayerLeaveDominatableZone", "ii", playerid, gDominatableZoneID[index]);
+	}
+	
+	return 1;
 }
