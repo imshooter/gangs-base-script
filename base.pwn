@@ -13,6 +13,10 @@
 
 main(){}
 
+/**
+ * # Tests
+ */
+
 public OnGameModeInit() {
     // Test 1
 
@@ -35,5 +39,21 @@ public OnGameModeInit() {
         printf("`%s` has zone ID: %i", name, zoneid);
     }
 
+    return 1;
+}
+
+public OnPlayerCommandText(playerid, cmdtext[]) {
+    if (!strcmp(cmdtext, "/count")) {
+        SendClientMessage(playerid, -1, "Current player count in your zone: %i", GetZonePlayerCount(GetPlayerDominatableZoneID(playerid)));
+        
+        return 1;
+    }
+    
+    return 0;
+}
+
+public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) {
+    SetPlayerPosFindZ(playerid, fX, fY, fZ);
+    
     return 1;
 }
