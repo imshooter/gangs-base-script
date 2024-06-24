@@ -3,7 +3,7 @@
  */
 
 #if !defined DOMIN_ZONE_STREAMER_IDENTIFIER
-	#define DOMIN_ZONE_STREAMER_IDENTIFIER (0)
+    #define DOMIN_ZONE_STREAMER_IDENTIFIER (0)
 #endif
 
 static enum E_ZONE_AREA_DATA {
@@ -146,15 +146,15 @@ static stock const
 };
 
 const
-	MAX_DOMIN_ZONE_AREAS = (sizeof (gZoneAreaData))
+    MAX_DOMIN_ZONE_AREAS = (sizeof (gZoneAreaData))
 ;
 
 static
-    gDominatableZoneID[MAX_DOMIN_ZONE_AREAS] 			       = { INVALID_GANG_ZONE, ... },
-	STREAMER_TAG_AREA:gDominatableZoneAreaID[MAX_GANG_ZONES]   = { STREAMER_TAG_AREA:INVALID_STREAMER_ID, ... },
-	Faction:gZoneFactionID[MAX_GANG_ZONES char]                = { FACTION_NONE, ... },
-	gZoneFactionSlotID[MAX_GANG_ZONES char]                    = { -1, ... },
-	gFactionDominatedZones[MAX_FACTIONS][MAX_DOMIN_ZONE_AREAS] = { { INVALID_GANG_ZONE, ... }, ... }
+    gDominatableZoneID[MAX_DOMIN_ZONE_AREAS]                   = { INVALID_GANG_ZONE, ... },
+    STREAMER_TAG_AREA:gDominatableZoneAreaID[MAX_GANG_ZONES]   = { STREAMER_TAG_AREA:INVALID_STREAMER_ID, ... },
+    Faction:gZoneFactionID[MAX_GANG_ZONES char]                = { FACTION_NONE, ... },
+    gZoneFactionSlotID[MAX_GANG_ZONES char]                    = { -1, ... },
+    gFactionDominatedZones[MAX_FACTIONS][MAX_DOMIN_ZONE_AREAS] = { { INVALID_GANG_ZONE, ... }, ... }
 ;
 
 new
@@ -166,14 +166,14 @@ new
  */
 
 stock GetDominatableZoneID(index) {
-	return gDominatableZoneID[index];
+    return gDominatableZoneID[index];
 }
 
 stock GetDominatableZoneAreaPos(index, &Float:minX, &Float:minY, &Float:maxX, &Float:maxY) {
-	minX = gZoneAreaData[index][E_ZONE_AREA_MIN_X];
-	minY = gZoneAreaData[index][E_ZONE_AREA_MIN_Y];
-	maxX = gZoneAreaData[index][E_ZONE_AREA_MAX_X];
-	maxY = gZoneAreaData[index][E_ZONE_AREA_MAX_Y];
+    minX = gZoneAreaData[index][E_ZONE_AREA_MIN_X];
+    minY = gZoneAreaData[index][E_ZONE_AREA_MIN_Y];
+    maxX = gZoneAreaData[index][E_ZONE_AREA_MAX_X];
+    maxY = gZoneAreaData[index][E_ZONE_AREA_MAX_Y];
 }
 
 stock GetDominatableZoneAtPoint(Float:x, Float:y, Float:z) {
@@ -217,9 +217,9 @@ stock AddZoneToFaction(Faction:factionid, zoneid) {
 }
 
 stock RemoveZoneFromFaction(Faction:factionid, zoneid) {
-	if (gZoneFactionSlotID{zoneid} == -1) {
-		return;
-	}
+    if (gZoneFactionSlotID{zoneid} == -1) {
+        return;
+    }
 
     new const
         index = gZoneFactionSlotID{zoneid}
@@ -233,11 +233,11 @@ stock RemoveZoneFromFaction(Faction:factionid, zoneid) {
 }
 
 stock GetFactionDominatedZones(Faction:factionid, dest[MAX_DOMIN_ZONE_AREAS] = { INVALID_GANG_ZONE, ... }, &count = 0) {
-	count = 0;
+    count = 0;
 
-	foreach (new i : DominatedZone[factionid]) {
-		dest[count++] = gFactionDominatedZones[factionid][i];
-	}
+    foreach (new i : DominatedZone[factionid]) {
+        dest[count++] = gFactionDominatedZones[factionid][i];
+    }
 }
 
 stock GetPlayerFactionZoneID(playerid) {
@@ -259,7 +259,7 @@ stock GetPlayerFactionZoneID(playerid) {
  */
 
 hook OnGameModeInit() {
-	new
+    new
         data[2]
     ;
 
@@ -272,8 +272,8 @@ hook OnGameModeInit() {
 
         Streamer_SetArrayData(STREAMER_TYPE_AREA, gDominatableZoneAreaID[gDominatableZoneID[i]], E_STREAMER_EXTRA_ID, data);
     }
-	
-	return 1;
+    
+    return 1;
 }
 
 hook OnPlayerSpawn(playerid) {
@@ -292,6 +292,6 @@ hook OnPlayerSpawn(playerid) {
 
         GangZoneShowForPlayer(playerid, zoneid, GetFactionColor(factionid, 0x80));
     }
-	
-	return 1;
+    
+    return 1;
 }
