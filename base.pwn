@@ -237,10 +237,10 @@ RemoveZoneFromTeam(Team:teamid, zoneid) {
     Iter_Remove(TeamZone[teamid], index);
 }
 
-GetTeamZoneInPoint(Float:x, Float:y, Float:z) {
+GetTeamZoneAtPoint(Float:x, Float:y, Float:z) {
     /**
-     * This function will be used to get the zone by coordinates, like `GetPlayerPos` with `GetTeamZoneInPoint`.
-     * This will return the zone the player is in to begin dominating.
+     * This function will be used to get the zone by coordinates.
+     * This function returns the zone ID (gang territory) that will be in the function's coordinates.
      */
 
     new
@@ -257,6 +257,20 @@ GetTeamZoneInPoint(Float:x, Float:y, Float:z) {
 
         return gZoneID[data[2]];
     }
+}
+
+GetPlayerTeamZone(playerid) {
+    new
+        Float:x,
+        Float:y,
+        Float:z
+    ;
+
+    if (!GetPlayerPos(playerid, x, y, z)) {
+        return INVALID_GANG_ZONE;
+    }
+
+    return GetTeamZoneAtPoint(x, y, z);
 }
 
 InitZones() {
