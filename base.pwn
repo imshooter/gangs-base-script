@@ -12,15 +12,14 @@
 
 enum Team {
     TEAM_NONE,
-    TEAM_VARRIOS_LOS_AZTECAS,
-    TEAM_BALLAS,
-    TEAM_LOS_SANTOS_VAGOS,
-    TEAM_SAN_FIERRO_RIFA,
-    TEAM_GROVE_STREET_FAMILIES,
-    TEAM_SAN_FIERRO_TRIADS,
-    TEAM_DA_NANG_BOYS,
-    TEAM_THE_ITALIAN_MAFIA,
-    TEAM_THE_RUSSIAN_MAFIA
+    TEAM_BALLA,
+    TEAM_GROVE,
+    TEAM_VAGO,
+    TEAM_RIFA,
+    TEAM_DANANG,
+    TEAM_MAFIA,
+    TEAM_TRIAD,
+    TEAM_AZTECA
 };
 
 static enum E_TEAM_DATA {
@@ -32,15 +31,14 @@ static stock const
     gTeamData[][E_TEAM_DATA] =
 {
     {!"", 0xFFFFFFFF},
-    {!"Varrios Los Aztecas", 0x00C8FFFF}, // (Turquoise)
-    {!"Ballas", 0xC800C8FF}, // (Purple)
-    {!"Los Santos Vagos", 0xFFC800FF}, // (Yellow)
-    {!"San Fierro Rifa", 0x0000C8FF}, // (Dark Blue)
-    {!"Grove Street Families", 0x46C800FF}, // (Green)
-    {!"San Fierro Triads", 0xFFB6C1FF}, // (Light Pink)
-    {!"Da Nang Boys", 0xFFDCBEFF}, // (Orange)
-    {!"The Italian Mafia", 0xC8C8C8FF}, // (Gray)
-    {!"The Russian Mafia", 0x0E1111FF} // (Black)
+    {!"Ballas", 0xC800C8FF}, // (LS)
+    {!"Grove Street Families", 0x46C800FF}, // (LS)
+    {!"Los Santos Vagos", 0xFFC800FF}, // (LS)
+    {!"San Fierro Rifa", 0x0000C8FF}, // (SF)
+    {!"Da Nang Boys", 0xFF8000FF}, // (SF)
+    {!"Mafia", 0x000000FF}, // (LV)
+    {!"Mountain Cloud Triad", 0xFF0000FF}, // (SF)
+    {!"Varrio Los Aztecas", 0x00C8FFFF} // (LS)
 };
 
 static enum E_ZONE_AREA_DATA {
@@ -78,7 +76,7 @@ static stock const
     {ZONE_QUEENS, -2593.439941, 54.722000, -2411.219970, 458.411010},
     {ZONE_QUEENS, -2533.040039, 458.411010, -2329.310058, 578.395996},
     {ZONE_QUEENS, -2411.219970, 373.539001, -2253.540039, 458.411010},
-	{ZONE_THE_STRIP, 2027.400024, 863.229003, 2087.389892, 1703.229980},
+    {ZONE_THE_STRIP, 2027.400024, 863.229003, 2087.389892, 1703.229980},
 
     // LS
 
@@ -152,7 +150,6 @@ static stock const
     {ZONE_TEMPLE, 1096.469970, -1130.839965, 1252.329956, -1026.329956},
     {ZONE_TEMPLE, 1096.469970, -1026.329956, 1252.329956, -910.169982},
     {ZONE_TEMPLE, 1252.329956, -1130.849975, 1378.329956, -1026.329956},
-    {ZONE_TEMPLE, 1252.329956, -926.999023, 1357.000000, -910.169982},
     {ZONE_TEMPLE, 1252.329956, -1026.329956, 1391.050048, -926.999023},
     {ZONE_SANTA_MARIA_BEACH, 72.648101, -2173.290039, 342.648010, -1684.650024},
     {ZONE_SANTA_MARIA_BEACH, 342.648010, -2173.290039, 647.711975, -1684.650024},
